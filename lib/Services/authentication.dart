@@ -29,6 +29,15 @@ static Future<void> getSelfInfo() async{
     }
   });
 }
+//check email is valid or not
+  Future<bool> checkIfEmailExist(String email)async{
+    try{
+      final list= await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
+      return list.isNotEmpty;
+    }catch(e){
+      return false;
+    }
+  }
 //for signup
   Future<String> signUpUser({
     required String email,
@@ -36,6 +45,11 @@ static Future<void> getSelfInfo() async{
     required String name,
   }) async {
     try {
+      //check email
+      bool emailExists = await checkIfEmailExist(email);
+      if(!emailExists){
+        return "Invalid Email.Please use an existing email id.";
+      }
       UserCredential userCredential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(
         email: email,
